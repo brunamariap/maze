@@ -77,24 +77,24 @@ class Maze:
     
     def __resolve_labirinto(self, labirinto, t_linhas, t_colunas):
         """ Inicia o percurso no labirinto, definindo a posição de partida e de chegada"""
-        aux = 0 # variável q vai ajudar na contagem da caminhos possíveis
         print('\n\n Caminho percorrido')
-        self.__resolve_labirinto_recursivo(labirinto, self.entrada,self.fim, t_linhas - 1, t_colunas - 1, aux)
+        self.__resolve_labirinto_recursivo(labirinto, self.entrada,self.fim, t_linhas - 1, t_colunas - 1)
 
-    def __resolve_labirinto_recursivo(self, labirinto, pos_atual, pos_final, total_linhas, total_colunas, num_mov):
+    def __resolve_labirinto_recursivo(self, labirinto, pos_atual, pos_final, total_linhas, total_colunas):
         achou = False
+        aux = 0 # variável q vai ajudar na contagem da caminhos possíveis
 
         if self.__posicao_valida(pos_atual[0], pos_atual[1]):
-            labirinto[pos_atual[0]][pos_atual[1]] = '.'
+            labirinto[pos_atual][pos_atual] = '.'
             print('\n\n' + str(pos_atual))
 
             if pos_atual[0] == pos_final[0] and pos_atual[0] == pos_final[1]:
                 print('\n\nAchou', pos_atual)
                 achou = True
             
-            while achou is False and num_mov < self.num_movimentos:
-                achou = self.__resolve_labirinto_recursivo(labirinto,(pos_atual[0] + self.deslocamento_linhas[num_mov], pos_atual[1] + self.deslocamento_colunas[num_mov]), pos_final, total_linhas, total_colunas, num_mov)
-                num_mov += 1
+            while achou is False and aux < self.num_movimentos:
+                achou = self.__resolve_labirinto_recursivo(labirinto,(pos_atual[0] + self.deslocamento_linhas[aux], pos_atual[1] + self.deslocamento_colunas[aux]), pos_final, total_linhas, total_colunas)
+                aux += 1
                 self.__print_labirinto()
 
             labirinto[pos_atual[0]][pos_atual[1]] = 0
