@@ -2,10 +2,12 @@ from stack import Stack
 
 
 mouse = 'm'
-corredores = '0'
+corredor = '0'
 paredes = '1'
 saida = 'e'
 percorrido = '.'
+solucao = 'S'
+errado = 'X'
 
 
 class Maze:
@@ -23,7 +25,7 @@ class Maze:
 
     def run(self):
         self.__read_map()
-        self.__resolve_labirinto(self.map, self.num_linhas, self.num_colunas)
+        self.resolve()
 
     def __read_map(self):
         with open('labirinto.txt', 'r') as file:
@@ -63,42 +65,76 @@ class Maze:
         print(self.fim)
 
     
-    def __print_labirinto(self):
-        for i in self.map:
-            print(i)
+    def print_map(self):
+        for linha in self.map:
+            print(linha)
+        print('\n')
 
-    
-    def __posicao_valida(self, linha_atual, coluna_atual):
-        """ Verifica se a posição atual é válida """
-        if (linha_atual >= 0) and (coluna_atual >= 0) and (coluna_atual < self.num_colunas):
-            if self.map[linha_atual][coluna_atual] == '0': # Se ele está no corredor e pode ser percorrido
+    def resolve(self):
+        #pilha = Stack()
+        def posicao_valida(linha_atual, coluna_atual):
+            if linha_atual > self.num_linhas or coluna_atual > self.num_colunas or linha_atual < 0 or coluna_atual < 0:
+                print("Posição inválida, fora do mapa!")
+                return False
+            else:
                 return True
-        return False
-    
-    def __resolve_labirinto(self, labirinto, t_linhas, t_colunas):
-        """ Inicia o percurso no labirinto, definindo a posição de partida e de chegada"""
-        aux = 0 # variável q vai ajudar na contagem da caminhos possíveis
-        print('\n\n Caminho percorrido')
-        self.__resolve_labirinto_recursivo(labirinto, self.entrada,self.fim, t_linhas - 1, t_colunas - 1, aux)
 
-    def __resolve_labirinto_recursivo(self, labirinto, pos_atual, pos_final, total_linhas, total_colunas, num_mov):
-        achou = False
+        def encontra_saida(linha_atual, coluna_atual):
+            """Função recursiva para encontrar a saída"""
+            if self.map[linha_atual][coluna_atual] == saida:
+                print("saída")
+                self.print_map()
+                return True
+            else:
+                """
+                Marcar o caminho como percorrido
+                ordem dos caminhos: direita, esquerda, baixo e cima. """
+                #print(self.map[linha_atual][coluna_atual])
+                aux = list(self.map[linha_atual])
+                #print(aux)
+                aux[coluna_atual] = percorrido
+                aux = ''.join(i for i in aux)
+                self.map[linha_atual] = aux
+                #print(self.map)
+                self.print_map()
+                #self.map[linha_atual]
+                achou = False
 
-        if self.__posicao_valida(pos_atual[0], pos_atual[1]):
-            labirinto[pos_atual[0]][pos_atual[1]] = '.'
-            print('\n\n' + str(pos_atual))
+                #direita
+                if not achou and posicao_valida(linha_atual, coluna_atual + 1) and self.map[linha_atual][coluna_atual + 1] == corredor: 
+                    achou = encontra_saida(linha_atual, coluna_atual + 1)
+                
+                #esquerda
+                elif not achou and posicao_valida(linha_atual, coluna_atual - 1) and self.map[linha_atual][coluna_atual - 1] == corredor: 
+                    achou = encontra_saida(linha_atual, coluna_atual - 1)
+                
+                #baixo
+                elif not achou and posicao_valida(linha_atual + 1, coluna_atual) and self.map[linha_atual + 1][coluna_atual] == corredor: 
+                    achou = encontra_saida(linha_atual + 1, coluna_atual)
+                
+                #cima
+                elif not achou and posicao_valida(linha_atual, coluna_atual - 1) and self.map[linha_atual - 1][coluna_atual] == corredor: 
+                    achou = encontra_saida(linha_atual - 1, coluna_atual)
 
-            if pos_atual[0] == pos_final[0] and pos_atual[0] == pos_final[1]:
-                print('\n\nAchou', pos_atual)
-                achou = True
+            """ if achou:
+                #self.map[linha_atual][coluna_atual] = solucao
+                aux = list(self.map[linha_atual])
+                #print(aux)
+                aux[coluna_atual] = solucao
+                aux = ''.join(i for i in aux)
+                self.map[linha_atual] = aux
+                print("achou2")
+            else:
+                aux = list(self.map[linha_atual])
+                #print(aux)
+                aux[coluna_atual] = errado
+                aux = ''.join(i for i in aux)
+                self.map[linha_atual] = aux """
             
-            while achou is False and num_mov < self.num_movimentos:
-                achou = self.__resolve_labirinto_recursivo(labirinto,(pos_atual[0] + self.deslocamento_linhas[num_mov], pos_atual[1] + self.deslocamento_colunas[num_mov]), pos_final, total_linhas, total_colunas, num_mov)
-                num_mov += 1
-                self.__print_labirinto()
+        return encontra_saida(self.entrada[0], self.entrada[1])
 
-            labirinto[pos_atual[0]][pos_atual[1]] = 0
-        
-        return achou
 lab = Maze()
+#print(lab)
 lab.run()
+lab.print_map()
+#print(lab)
