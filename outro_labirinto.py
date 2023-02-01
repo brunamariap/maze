@@ -80,7 +80,8 @@ class Maze:
             print('Saída encontrada')
             return True
         else:
-
+            pilha_opcoes = Stack()
+            pilha_deslocamento = Stack()
             aux = list(self.map[cur_row])
             # print(aux)
             aux[cur_col] = percorrido
@@ -88,23 +89,38 @@ class Maze:
             self.map[cur_row] = aux
             # self.print_map()
             achou = False
+            #print(pilha)
 
-            num_mov = 0
             # direita
             if not achou and self.posicao_valida(cur_row, cur_col + 1) and self.map[cur_row][cur_col + 1] in (corredor, saida):
-                achou = self.resolve_rec(cur_row, cur_col + 1)
+                #achou = self.resolve_rec(cur_row, cur_col + 1)
+                pilha_deslocamento.push(0)
+                pilha_opcoes.push((cur_row, cur_col + 1))
 
-                # esquerda
-            elif not achou and self.posicao_valida(cur_row, cur_col - 1) and self.map[cur_row][cur_col - 1] in (corredor, saida):
-                achou = self.resolve_rec(cur_row, cur_col - 1)
+            # esquerda
+            if not achou and self.posicao_valida(cur_row, cur_col - 1) and self.map[cur_row][cur_col - 1] in (corredor, saida):
+                #achou = self.resolve_rec(cur_row, cur_col - 1)
+                pilha_deslocamento.push(1)
+                pilha_opcoes.push((cur_row, cur_col - 1))
 
-                # baixo
-            elif not achou and self.posicao_valida(cur_row + 1, cur_col) and self.map[cur_row + 1][cur_col] in (corredor, saida):
-                achou = self.resolve_rec(cur_row + 1, cur_col)
+            # baixo
+            if not achou and self.posicao_valida(cur_row + 1, cur_col) and self.map[cur_row + 1][cur_col] in (corredor, saida):
+                #achou = self.resolve_rec(cur_row + 1, cur_col)
+                pilha_deslocamento.push(2)
+                pilha_opcoes.push((cur_row + 1, cur_col))
 
-                # cima
-            elif not achou and self.posicao_valida(cur_row, cur_col - 1) and self.map[cur_row - 1][cur_col] in (corredor, saida):
-                achou = self.resolve_rec(cur_row - 1, cur_col)
+            # cima
+            if not achou and self.posicao_valida(cur_row, cur_col - 1) and self.map[cur_row - 1][cur_col] in (corredor, saida):
+                #achou = self.resolve_rec(cur_row - 1, cur_col)
+                pilha_deslocamento.push(3)
+                pilha_opcoes.push((cur_row - 1, cur_col))
+            
+            if len(pilha_opcoes) == 0:
+                pass
+            else:
+                deslocamento = pilha_deslocamento.peek()
+                topo_pilha = pilha_opcoes.pop()
+                self.resolve_rec(cur_row + self.deslocamento_linhas[topo_pilha[0]], cur_col + self.deslocamento_colunas[topo_pilha[1]])
             # self.resolve_rec(cur_row, cur_col)
         #return achou
 
