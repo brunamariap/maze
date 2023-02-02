@@ -7,6 +7,7 @@ paredes = '1'
 saida = 'e'
 percorrido = '.'
 
+
 class Maze:
     def __init__(self):
         self.map = None
@@ -26,7 +27,6 @@ class Maze:
         self.__read_map()
         while not self.encontrar_saida():
             self.print_map()
-            
 
     def __read_map(self):
         with open('labirinto.txt', 'r') as file:
@@ -62,7 +62,7 @@ class Maze:
                 except:
                     if i == self.num_linhas - 1:
                         raise ValueError("O mapa não possui saída")
-        
+
         self.pilha.push((self.entrada[0], self.entrada[1]))
         print(self.entrada)
         print(self.fim)
@@ -84,7 +84,7 @@ class Maze:
         topo = self.pilha.peek()
         print(self.pilha)
 
-        #while achou is False:
+        # while achou is False:
         """ if self.map[topo[0]][topo[1]] == 'e':
             return True """
 
@@ -92,46 +92,55 @@ class Maze:
             return True
 
         elif self.posicao_valida(topo[0], topo[1] + 1) and self.map[topo[0]][topo[1] + 1] in (corredor, saida):
-            if topo == self.fim:
-                return True
+            self.print_percorrido()
             aux = list(self.map[topo[0]])
-            aux[topo[1] + 1] = percorrido
+            aux[topo[1] + 1] = mouse
             aux = ''.join(i for i in aux)
             self.map[topo[0]] = aux
             self.pilha.push((topo[0], topo[1] + 1))
 
         elif self.posicao_valida(topo[0], topo[1] - 1) and self.map[topo[0]][topo[1] - 1] in (corredor, saida):
-            if topo == self.fim:
-                return True
+            self.print_percorrido()
             aux = list(self.map[topo[0]])
-            aux[topo[1] - 1] = percorrido
+            aux[topo[1] - 1] = mouse
             aux = ''.join(i for i in aux)
             self.map[topo[0]] = aux
             self.pilha.push((topo[0], topo[1] - 1))
 
         elif self.posicao_valida(topo[0] + 1, topo[1]) and self.map[topo[0] + 1][topo[1]] in (corredor, saida):
-            if topo == self.fim:
-                return True
+            self.print_percorrido()
             aux = list(self.map[topo[0] + 1])
-            aux[topo[1]] = percorrido
+            aux[topo[1]] = mouse
             aux = ''.join(i for i in aux)
             self.map[topo[0] + 1] = aux
             self.pilha.push((topo[0] + 1, topo[1]))
 
-        elif self.posicao_valida(topo[0] - 1, topo[1]) and self.map[topo[0] - 1][topo[1]] in (corredor,saida):
-            if topo == self.fim:
-                return True
+        elif self.posicao_valida(topo[0] - 1, topo[1]) and self.map[topo[0] - 1][topo[1]] in (corredor, saida):
+            self.print_percorrido()
             aux = list(self.map[topo[0] - 1])
-            aux[topo[1]] = percorrido
+            aux[topo[1]] = mouse
             aux = ''.join(i for i in aux)
             self.map[topo[0] - 1] = aux
             self.pilha.push((topo[0] - 1, topo[1]))
-        
+
         else:
+            aux = list(self.map[topo[0]])
+            aux[topo[1]] = percorrido
+            aux = ''.join(i for i in aux)
+            self.map[topo[0]] = aux
+            #self.pilha.push((topo[0] - 1, topo[1]))
             print('entrou')
             self.pilha.pop()
+
         return False
 
+    def print_percorrido(self):
+        topo_p = self.pilha.peek()
+        aux = list(self.map[topo_p[0]])
+        aux[topo_p[1]] = percorrido
+        aux = ''.join(i for i in aux)
+        self.map[topo_p[0]] = aux
+        #self.pilha.push((topo[0] - 1, topo[1]))
 
 lab = Maze()
 # print(lab)
