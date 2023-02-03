@@ -1,9 +1,11 @@
+from labirintozinho import *
 from stack import Stack
+from tkinter import *
 
 
 mouse = 'm'
 corredor = '0'
-paredes = '1'
+parede = '1'
 saida = 'e'
 percorrido = '.'
 
@@ -16,7 +18,6 @@ class Maze:
         self.num_linhas = None
         self.num_colunas = None
         self.pilha = Stack()
-        self.typelab = 0
 
         """ ordem dos caminhos: direita, esquerda, baixo e cima. """
         self.deslocamento_linhas = (0, 0, 1, -1)
@@ -24,11 +25,14 @@ class Maze:
         self.num_movimentos = 4
 
     def run(self):
-        self.__read_map()
+        # self.read_map()
+        if not self.map:
+            self.read_map()
         while not self.encontrar_saida():
             self.print_map()
+        self.master.destroy()
 
-    def __read_map(self):
+    def read_map(self):
         with open('labirinto.txt', 'r') as file:
             self.map = file.read()
         self.map = self.map.split('\n')  # Separa em sublistas
@@ -80,7 +84,6 @@ class Maze:
             return True
 
     def encontrar_saida(self,):
-        achou = False
         topo = self.pilha.peek()
         print(self.pilha)
 
@@ -88,6 +91,8 @@ class Maze:
         """ if self.map[topo[0]][topo[1]] == 'e':
             return True """
 
+        self.draw_interface()
+    
         if topo == self.fim:
             return True
 
@@ -123,6 +128,10 @@ class Maze:
             self.map[topo[0] - 1] = aux
             self.pilha.push((topo[0] - 1, topo[1]))
 
+        elif len(self.pilha) == 0:
+            print('Não existe saída')
+            return False
+
         else:
             aux = list(self.map[topo[0]])
             aux[topo[1]] = percorrido
@@ -142,7 +151,46 @@ class Maze:
         self.map[topo_p[0]] = aux
         #self.pilha.push((topo[0] - 1, topo[1]))
 
-lab = Maze()
+    def draw_interface(self):
+        self.master = Tk()
+        self.master.title('Labirinto')
+        altura = self.num_linhas * 32
+        largura = self.num_colunas * 32
+        mapa_inicio = self.map
+        print(mapa_inicio)
+        self.master.geometry(f'{largura}x{altura}')
+
+        self.master.wm_resizable()  # não permitir que a tela possa ser redimensionada
+
+        #paredes.place(x=50, y=10, width=100,height=20)
+
+        for i, linha in enumerate(mapa_inicio):
+            for j, coluna in enumerate(mapa_inicio[i]):
+                if mapa_inicio[i][j] == parede:
+                    paredes = Label(self.master, background='#000000',
+                                    foreground='#999050')
+                    paredes.place(x=32*j, y=32*i, width=32, height=32)
+
+                elif mapa_inicio[i][j] == mouse:
+                    rato = Label(self.master, background='#964b00')
+                    rato.place(x=32*j, y=32*i, width=32, height=32)
+
+                elif mapa_inicio[i][j] == saida:
+                    final_lab = Label(self.master, background='#FFFF00')
+                    final_lab.place(x=32*j, y=32*i, width=32, height=32)
+
+                elif mapa_inicio[i][j] == corredor:
+                    corredores = Label(self.master, background='#CCC')
+                    corredores.place(x=32*j, y=32*i, width=32, height=32)
+
+                elif mapa_inicio[i][j] == percorrido:
+                    percorridos = Label(self.master, background='#CCCC74')
+                    percorridos.place(x=32*j, y=32*i, width=32, height=32)
+
+        self.master.mainloop()
+
+
 # print(lab)
+lab = Maze()
 lab.run()
 # print(lab)
