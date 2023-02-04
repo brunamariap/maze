@@ -19,20 +19,17 @@ class Maze:
         self.num_colunas = None
         self.pilha = Stack()
 
-        """ ordem dos caminhos: direita, esquerda, baixo e cima. """
-        self.deslocamento_linhas = (0, 0, 1, -1)
-        self.deslocamento_colunas = (1, -1, 0, 0)
-        self.num_movimentos = 4
 
     def run(self):
         # self.read_map()
-        if not self.map:
-            self.read_map()
-        while not self.encontrar_saida():
-            self.print_map()
+        self.__read_map()
+        while not self.__encontrar_saida():
+            self.__print_map()
+            if len(self.pilha) == 0:
+                raise ValueError('Não existe saída')
         self.master.destroy()
 
-    def read_map(self):
+    def __read_map(self):
         with open('labirinto.txt', 'r') as file:
             self.map = file.read()
         self.map = self.map.split('\n')  # Separa em sublistas
@@ -71,32 +68,29 @@ class Maze:
         print(self.entrada)
         print(self.fim)
 
-    def print_map(self):
+    def __print_map(self):
         for linha in self.map:
             print(linha)
         print('\n')
 
-    def posicao_valida(self, linha_atual, coluna_atual):
+    def __posicao_valida(self, linha_atual, coluna_atual):
         if linha_atual > self.num_linhas or coluna_atual > self.num_colunas or linha_atual < 0 or coluna_atual < 0:
             print("Posição inválida, fora do mapa!")
             return False
         else:
             return True
 
-    def encontrar_saida(self,):
+    def __encontrar_saida(self,):
         topo = self.pilha.peek()
         print(self.pilha)
 
-        # while achou is False:
-        """ if self.map[topo[0]][topo[1]] == 'e':
-            return True """
-
-        self.draw_interface()
+        self.__draw_interface()
     
         if topo == self.fim:
             return True
 
-        elif self.posicao_valida(topo[0], topo[1] + 1) and self.map[topo[0]][topo[1] + 1] in (corredor, saida):
+        # direita
+        elif self.__posicao_valida(topo[0], topo[1] + 1) and self.map[topo[0]][topo[1] + 1] in (corredor, saida):
             self.print_percorrido()
             aux = list(self.map[topo[0]])
             aux[topo[1] + 1] = mouse
@@ -104,7 +98,8 @@ class Maze:
             self.map[topo[0]] = aux
             self.pilha.push((topo[0], topo[1] + 1))
 
-        elif self.posicao_valida(topo[0], topo[1] - 1) and self.map[topo[0]][topo[1] - 1] in (corredor, saida):
+        #esquerda
+        elif self.__posicao_valida(topo[0], topo[1] - 1) and self.map[topo[0]][topo[1] - 1] in (corredor, saida):
             self.print_percorrido()
             aux = list(self.map[topo[0]])
             aux[topo[1] - 1] = mouse
@@ -112,7 +107,8 @@ class Maze:
             self.map[topo[0]] = aux
             self.pilha.push((topo[0], topo[1] - 1))
 
-        elif self.posicao_valida(topo[0] + 1, topo[1]) and self.map[topo[0] + 1][topo[1]] in (corredor, saida):
+        #baixo
+        elif self.__posicao_valida(topo[0] + 1, topo[1]) and self.map[topo[0] + 1][topo[1]] in (corredor, saida):
             self.print_percorrido()
             aux = list(self.map[topo[0] + 1])
             aux[topo[1]] = mouse
@@ -120,7 +116,8 @@ class Maze:
             self.map[topo[0] + 1] = aux
             self.pilha.push((topo[0] + 1, topo[1]))
 
-        elif self.posicao_valida(topo[0] - 1, topo[1]) and self.map[topo[0] - 1][topo[1]] in (corredor, saida):
+        #cima
+        elif self.__posicao_valida(topo[0] - 1, topo[1]) and self.map[topo[0] - 1][topo[1]] in (corredor, saida):
             self.print_percorrido()
             aux = list(self.map[topo[0] - 1])
             aux[topo[1]] = mouse
@@ -128,18 +125,17 @@ class Maze:
             self.map[topo[0] - 1] = aux
             self.pilha.push((topo[0] - 1, topo[1]))
 
-        elif len(self.pilha) == 0:
-            print('Não existe saída')
-            return False
-
         else:
             aux = list(self.map[topo[0]])
             aux[topo[1]] = percorrido
             aux = ''.join(i for i in aux)
             self.map[topo[0]] = aux
-            #self.pilha.push((topo[0] - 1, topo[1]))
-            print('entrou')
             self.pilha.pop()
+
+        aux = list(self.map[topo[0]])
+        aux[topo[1]] = percorrido
+        aux = ''.join(i for i in aux)
+        self.map[topo[0]] = aux
 
         return False
 
@@ -149,43 +145,42 @@ class Maze:
         aux[topo_p[1]] = percorrido
         aux = ''.join(i for i in aux)
         self.map[topo_p[0]] = aux
-        #self.pilha.push((topo[0] - 1, topo[1]))
 
-    def draw_interface(self):
+    def __draw_interface(self):
         self.master = Tk()
         self.master.title('Labirinto')
-        altura = self.num_linhas * 32
-        largura = self.num_colunas * 32
-        mapa_inicio = self.map
-        print(mapa_inicio)
+        self.dimensoes_quadrado = 64
+        altura = self.num_linhas * self.dimensoes_quadrado
+        largura = self.num_colunas * self.dimensoes_quadrado
+        mapa = self.map
         self.master.geometry(f'{largura}x{altura}')
 
         self.master.wm_resizable()  # não permitir que a tela possa ser redimensionada
 
         #paredes.place(x=50, y=10, width=100,height=20)
 
-        for i, linha in enumerate(mapa_inicio):
-            for j, coluna in enumerate(mapa_inicio[i]):
-                if mapa_inicio[i][j] == parede:
+        for i, linha in enumerate(mapa):
+            for j, coluna in enumerate(mapa[i]):
+                if mapa[i][j] == parede:
                     paredes = Label(self.master, background='#000000',
                                     foreground='#999050')
-                    paredes.place(x=32*j, y=32*i, width=32, height=32)
+                    paredes.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i, width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa_inicio[i][j] == mouse:
+                elif mapa[i][j] == mouse:
                     rato = Label(self.master, background='#964b00')
-                    rato.place(x=32*j, y=32*i, width=32, height=32)
+                    rato.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i, width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa_inicio[i][j] == saida:
+                elif mapa[i][j] == saida:
                     final_lab = Label(self.master, background='#FFFF00')
-                    final_lab.place(x=32*j, y=32*i, width=32, height=32)
+                    final_lab.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i, width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa_inicio[i][j] == corredor:
+                elif mapa[i][j] == corredor:
                     corredores = Label(self.master, background='#CCC')
-                    corredores.place(x=32*j, y=32*i, width=32, height=32)
+                    corredores.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i, width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa_inicio[i][j] == percorrido:
+                elif mapa[i][j] == percorrido:
                     percorridos = Label(self.master, background='#CCCC74')
-                    percorridos.place(x=32*j, y=32*i, width=32, height=32)
+                    percorridos.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i, width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
         self.master.mainloop()
 
