@@ -1,4 +1,3 @@
-from labirintozinho import *
 from stack import Stack
 from tkinter import *
 
@@ -21,12 +20,11 @@ class Maze:
 
 
     def run(self):
-        # self.read_map()
         self.__read_map()
         while not self.__encontrar_saida():
             self.__print_map()
             if len(self.pilha) == 0:
-                raise ValueError('Não existe saída')
+                raise ValueError('Não é possível encontrar a saída')
         self.master.destroy()
 
     def __read_map(self):
@@ -65,15 +63,15 @@ class Maze:
                         raise ValueError("O mapa não possui saída")
 
         self.pilha.push((self.entrada[0], self.entrada[1]))
-        print(self.entrada)
-        print(self.fim)
+        print('Entrada:', self.entrada)
+        print('Saída:',self.fim)
 
     def __print_map(self):
         for linha in self.map:
             print(linha)
         print('\n')
 
-    def __posicao_valida(self, linha_atual, coluna_atual):
+    def __position_valid(self, linha_atual, coluna_atual):
         if linha_atual > self.num_linhas or coluna_atual > self.num_colunas or linha_atual < 0 or coluna_atual < 0:
             print("Posição inválida, fora do mapa!")
             return False
@@ -90,8 +88,8 @@ class Maze:
             return True
 
         # direita
-        elif self.__posicao_valida(topo[0], topo[1] + 1) and self.map[topo[0]][topo[1] + 1] in (corredor, saida):
-            self.print_percorrido()
+        elif self.__position_valid(topo[0], topo[1] + 1) and self.map[topo[0]][topo[1] + 1] in (corredor, saida):
+            self.__parte_percorrida()
             aux = list(self.map[topo[0]])
             aux[topo[1] + 1] = mouse
             aux = ''.join(i for i in aux)
@@ -99,8 +97,8 @@ class Maze:
             self.pilha.push((topo[0], topo[1] + 1))
 
         #esquerda
-        elif self.__posicao_valida(topo[0], topo[1] - 1) and self.map[topo[0]][topo[1] - 1] in (corredor, saida):
-            self.print_percorrido()
+        elif self.__position_valid(topo[0], topo[1] - 1) and self.map[topo[0]][topo[1] - 1] in (corredor, saida):
+            self.__parte_percorrida()
             aux = list(self.map[topo[0]])
             aux[topo[1] - 1] = mouse
             aux = ''.join(i for i in aux)
@@ -108,8 +106,8 @@ class Maze:
             self.pilha.push((topo[0], topo[1] - 1))
 
         #baixo
-        elif self.__posicao_valida(topo[0] + 1, topo[1]) and self.map[topo[0] + 1][topo[1]] in (corredor, saida):
-            self.print_percorrido()
+        elif self.__position_valid(topo[0] + 1, topo[1]) and self.map[topo[0] + 1][topo[1]] in (corredor, saida):
+            self.__parte_percorrida()
             aux = list(self.map[topo[0] + 1])
             aux[topo[1]] = mouse
             aux = ''.join(i for i in aux)
@@ -117,8 +115,8 @@ class Maze:
             self.pilha.push((topo[0] + 1, topo[1]))
 
         #cima
-        elif self.__posicao_valida(topo[0] - 1, topo[1]) and self.map[topo[0] - 1][topo[1]] in (corredor, saida):
-            self.print_percorrido()
+        elif self.__position_valid(topo[0] - 1, topo[1]) and self.map[topo[0] - 1][topo[1]] in (corredor, saida):
+            self.__parte_percorrida()
             aux = list(self.map[topo[0] - 1])
             aux[topo[1]] = mouse
             aux = ''.join(i for i in aux)
@@ -139,7 +137,7 @@ class Maze:
 
         return False
 
-    def print_percorrido(self):
+    def __parte_percorrida(self):
         topo_p = self.pilha.peek()
         aux = list(self.map[topo_p[0]])
         aux[topo_p[1]] = percorrido
@@ -185,7 +183,5 @@ class Maze:
         self.master.mainloop()
 
 
-# print(lab)
 lab = Maze()
 lab.run()
-# print(lab)
