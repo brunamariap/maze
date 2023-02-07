@@ -30,16 +30,13 @@ class Maze:
     def __read_map(self):
         with open('labirinto.txt', 'r') as file:
             self.map = file.read()
-        self.map = self.map.split('\n')  # Separa em sublistas
-        print(self.map)
+        self.map = self.map.split('\n') 
         self.num_colunas = len(self.map[0])
         self.num_linhas = len(self.map)
 
         for i in self.map:
-            # print(i)
             if len(i) != self.num_colunas:
-                raise ValueError(
-                    'As linhas não pussuem o mesmo total de colunas')
+                raise ValueError('As linhas não pussuem o mesmo total de colunas')
 
         pos_mouse = None
         pos_saida = None
@@ -153,9 +150,7 @@ class Maze:
         mapa = self.map
         self.master.geometry(f'{largura}x{altura}')
 
-        self.master.wm_resizable()  # não permitir que a tela possa ser redimensionada
-
-        #paredes.place(x=50, y=10, width=100,height=20)
+        self.master.wm_resizable()
 
         for i, linha in enumerate(mapa):
             for j, coluna in enumerate(mapa[i]):
