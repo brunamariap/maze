@@ -2,11 +2,11 @@ from stack import Stack
 from tkinter import *
 
 
-mouse = 'm'
-corredor = '0'
-parede = '1'
-saida = 'e'
-percorrido = '.'
+MOUSE = 'm'
+CORREDOR = '0'
+PAREDE = '1'
+SAIDA = 'e'
+PERCORRIDO = '.'
 
 
 class Maze:
@@ -40,7 +40,7 @@ class Maze:
         for i, linha in enumerate(self.map):
             if pos_mouse is None:
                 try:
-                    pos_mouse = linha.index(mouse)
+                    pos_mouse = linha.index(MOUSE)
                     if pos_mouse:
                         self.entrada = (i, pos_mouse)
                 except:
@@ -49,7 +49,7 @@ class Maze:
 
             if pos_saida is None:
                 try:
-                    pos_saida = linha.index(saida)
+                    pos_saida = linha.index(SAIDA)
                     if pos_saida:
                         self.fim = (i, pos_saida)
                 except:
@@ -81,22 +81,22 @@ class Maze:
             return True
 
         # right
-        elif self.__position_valid(top[0], top[1] + 1) and self.map[top[0]][top[1] + 1] in (corredor, saida):
+        elif self.__position_valid(top[0], top[1] + 1) and self.map[top[0]][top[1] + 1] in (CORREDOR, SAIDA):
             self.__parte_percorrida()
             self.__mouse_current_position(0, 1)
 
         # left
-        elif self.__position_valid(top[0], top[1] - 1) and self.map[top[0]][top[1] - 1] in (corredor, saida):
+        elif self.__position_valid(top[0], top[1] - 1) and self.map[top[0]][top[1] - 1] in (CORREDOR, SAIDA):
             self.__parte_percorrida()
             self.__mouse_current_position(0, -1)
 
         # down
-        elif self.__position_valid(top[0] + 1, top[1]) and self.map[top[0] + 1][top[1]] in (corredor, saida):
+        elif self.__position_valid(top[0] + 1, top[1]) and self.map[top[0] + 1][top[1]] in (CORREDOR, SAIDA):
             self.__parte_percorrida()
             self.__mouse_current_position(1, 0)
 
         # up
-        elif self.__position_valid(top[0] - 1, top[1]) and self.map[top[0] - 1][top[1]] in (corredor, saida):
+        elif self.__position_valid(top[0] - 1, top[1]) and self.map[top[0] - 1][top[1]] in (CORREDOR, SAIDA):
             self.__parte_percorrida()
             self.__mouse_current_position(-1, 0)
 
@@ -109,7 +109,7 @@ class Maze:
 
             top = self.pilha.peek()
             aux = list(self.map[top[0]])
-            aux[top[1]] = mouse
+            aux[top[1]] = MOUSE
             aux = ''.join(i for i in aux)
             self.map[top[0]] = aux
 
@@ -118,14 +118,14 @@ class Maze:
     def __parte_percorrida(self):
         top_p = self.pilha.peek()
         aux = list(self.map[top_p[0]])
-        aux[top_p[1]] = percorrido
+        aux[top_p[1]] = PERCORRIDO
         aux = ''.join(i for i in aux)
         self.map[top_p[0]] = aux
 
     def __mouse_current_position(self, x, y):
         top = self.pilha.peek()
         aux = list(self.map[top[0] + x])
-        aux[top[1] + y] = mouse
+        aux[top[1] + y] = MOUSE
         aux = ''.join(i for i in aux)
         self.map[top[0] + x] = aux
         self.pilha.push((top[0] + x, top[1] + y))
@@ -143,28 +143,28 @@ class Maze:
 
         for i, linha in enumerate(mapa):
             for j, coluna in enumerate(mapa[i]):
-                if mapa[i][j] == parede:
+                if mapa[i][j] == PAREDE:
                     paredes = Label(self.master, background='#000000',
                                     foreground='#999050')
                     paredes.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i,
                                   width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa[i][j] == mouse:
+                elif mapa[i][j] == MOUSE:
                     rato = Label(self.master, background='#964b00')
                     rato.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i,
                                width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa[i][j] == saida:
+                elif mapa[i][j] == SAIDA:
                     final_lab = Label(self.master, background='#FFFF00')
                     final_lab.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i,
                                     width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa[i][j] == corredor:
+                elif mapa[i][j] == CORREDOR:
                     corredores = Label(self.master, background='#CCC')
                     corredores.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i,
                                      width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
 
-                elif mapa[i][j] == percorrido:
+                elif mapa[i][j] == PERCORRIDO:
                     percorridos = Label(self.master, background='#CCCC74')
                     percorridos.place(x=self.dimensoes_quadrado*j, y=self.dimensoes_quadrado*i,
                                       width=self.dimensoes_quadrado, height=self.dimensoes_quadrado)
