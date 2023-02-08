@@ -8,7 +8,6 @@ parede = '1'
 saida = 'e'
 percorrido = '.'
 
-
 class Maze:
     def __init__(self):
         self.map = None
@@ -23,9 +22,6 @@ class Maze:
         self.__read_map()
         while not self.__encontrar_saida():
             self.__print_map()
-            if len(self.pilha) == 0:
-                raise ValueError('Não é possível encontrar a saída')
-        self.master.destroy()
 
     def __read_map(self):
         with open('labirinto.txt', 'r') as file:
@@ -70,7 +66,6 @@ class Maze:
 
     def __position_valid(self, linha_atual, coluna_atual):
         if linha_atual > self.num_linhas or coluna_atual > self.num_colunas or linha_atual < 0 or coluna_atual < 0:
-            print("Posição inválida, fora do mapa!")
             return False
         else:
             return True
@@ -121,17 +116,18 @@ class Maze:
             self.pilha.push((topo[0] - 1, topo[1]))
 
         else:
-            aux = list(self.map[topo[0]])
-            aux[topo[1]] = percorrido
-            aux = ''.join(i for i in aux)
-            self.map[topo[0]] = aux
+            self.__parte_percorrida()
             self.pilha.pop()
 
-        aux = list(self.map[topo[0]])
-        aux[topo[1]] = percorrido
-        aux = ''.join(i for i in aux)
-        self.map[topo[0]] = aux
+            if len(self.pilha) == 0:
+                raise ValueError('Não é possível encontrar a saída')
 
+            topo = self.pilha.peek()
+            aux = list(self.map[topo[0]])
+            aux[topo[1]] = mouse
+            aux = ''.join(i for i in aux)
+            self.map[topo[0]] = aux
+        
         return False
 
     def __parte_percorrida(self):
@@ -148,9 +144,9 @@ class Maze:
         altura = self.num_linhas * self.dimensoes_quadrado
         largura = self.num_colunas * self.dimensoes_quadrado
         mapa = self.map
-        self.master.geometry(f'{largura}x{altura}')
+        self.master.geometry(f'{largura}x{altura}+317+34')
 
-        self.master.wm_resizable()
+        #self.master.wm_resizable()
 
         for i, linha in enumerate(mapa):
             for j, coluna in enumerate(mapa[i]):
